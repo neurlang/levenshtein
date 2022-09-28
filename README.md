@@ -1,5 +1,8 @@
 # levenshtein
-Levenshtein implements the Levenshtein (edit distance) algorithm for golang
+Levenshtein implements the Levenshtein (edit distance) algorithm for golang (with generics) (go>=1.18)
+```
+import "github.com/neurlang/levenshtein"
+```
 
 Calculate the edit distance between unicode strings.
 
