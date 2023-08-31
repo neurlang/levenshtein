@@ -16,14 +16,6 @@ func main1() {
 		nil, nil,
 		levenshtein.OneSlice[rune, float32]([]rune(word1), []rune(word2)), nil)
 	
-	for x := 0; x <= len([]rune(word2)); x++ {
-	for y := 0; y <= len([]rune(word1)); y++ {
-		var pos = x+y*(len([]rune(word2))+1)
-		fmt.Print(mat[pos], " ")
-	}
-		fmt.Println()
-	}
-
 	fmt.Println("Edit distance is:", *levenshtein.Distance(mat))
 
 }
@@ -41,15 +33,21 @@ func main2() {
 		nil, nil,
 		levenshtein.OneString[float32]((word1), (word2)), nil)
 	
-	for x := 0; x <= len((word2)); x++ {
-	for y := 0; y <= len((word1)); y++ {
-		var pos = x+y*(len((word2))+1)
-		fmt.Print(mat[pos], " ")
-	}
-		fmt.Println()
-	}
-
 	fmt.Println("Edit distance is:", *levenshtein.Distance(mat))
 
+}
+```
+
+Calculate the transposed edit distance between string slices.
+
+```
+func main3() {
+	var array1 = []string{"0", "1", "2"}
+	var array2 = []string{"0", "2"}
+	
+	var matt = levenshtein.MatrixTSlices[float32, string](array1, array2,
+		nil, nil, nil, nil)
+
+	fmt.Println("Transposed Edit distance is:", *levenshtein.Distance(matt))
 }
 ```

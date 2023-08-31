@@ -37,6 +37,19 @@ func OneSlice[C comparable, T Number](a, b []C) func(uint, uint) *T {
 	}
 }
 
+// OneElements is the default substitution cost callback which calculates
+// the substitution cost between two comparable elements.
+// The substitution cost is none if the slice elements are the same, and One if
+// the slice elements are not equal.
+func OneElements[C comparable, T Number](a *C, b *C) *T {
+	if *a == *b {
+		return (*T)(nil)
+	}
+	var n T
+	n = 1
+	return &n
+}
+
 // OneString instantiates the default substitution cost callback which calculates
 // the substitution cost between two strings.
 // The substitution cost is none if the string bytes are the same, and One if
@@ -74,7 +87,7 @@ func Kernel[T Number](d []T, i uint, j uint, n uint, cost *T) {
 	}
 }
 
-// Matrix is the transposed Levenshtein algorithm
+// MatrixT is the transposed Levenshtein algorithm
 func MatrixT[T Number](m uint, n uint, deletion func(uint) *T, insertion func(uint) *T,
 	substCost func(uint, uint) *T, kernel func(d []T, i uint, j uint, n uint, cost *T)) []T {
 
@@ -144,4 +157,17 @@ func Matrix[T Number](m uint, n uint, deletion func(uint) *T, insertion func(uin
 	}
 
 	return d
+}
+
+// MatrixTSlices is the transposed Levenshtein algorithm for edit distance between slices
+func MatrixTSlices[T Number, S comparable](ms, ns []S, deletion func(uint) *T, insertion func(uint) *T,
+	substCost func(*S, *S) *T, kernel func(d []T, i uint, j uint, n uint, cost *T)) []T {
+
+	if substCost == nil {
+		substCost = OneElements[S, T]
+	}
+
+	return MatrixT(uint(len(ms)), uint(len(ns)), deletion, insertion, func(m uint, n uint) *T {
+		return substCost(&ms[m], &ns[n])
+	}, kernel)
 }
