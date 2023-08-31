@@ -13,8 +13,8 @@ func main1() {
 	const word2 = "Ö"
 
 	var mat = levenshtein.Matrix[float32](uint(len([]rune(word1))), uint(len([]rune(word2))),
-		levenshtein.One[float32], levenshtein.One[float32],
-		levenshtein.OneSlice[rune, float32]([]rune(word1), []rune(word2)), levenshtein.Kernel[float32])
+		nil, nil,
+		levenshtein.OneSlice[rune, float32]([]rune(word1), []rune(word2)), nil)
 	
 	for x := 0; x <= len([]rune(word2)); x++ {
 	for y := 0; y <= len([]rune(word1)); y++ {
@@ -38,8 +38,8 @@ func main2() {
 	const word2 = "Ö"
 
 	var mat = levenshtein.Matrix[float32](uint(len((word1))), uint(len((word2))),
-		levenshtein.One[float32], levenshtein.One[float32],
-		levenshtein.OneString[float32]((word1), (word2)), levenshtein.Kernel[float32])
+		nil, nil,
+		levenshtein.OneString[float32]((word1), (word2)), nil)
 	
 	for x := 0; x <= len((word2)); x++ {
 	for y := 0; y <= len((word1)); y++ {

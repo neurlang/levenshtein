@@ -74,9 +74,29 @@ func Kernel[T Number](d []T, i uint, j uint, n uint, cost *T) {
 	}
 }
 
+// Matrix is the transposed Levenshtein algorithm
+func MatrixT[T Number](m uint, n uint, deletion func(uint) *T, insertion func(uint) *T,
+	substCost func(uint, uint) *T, kernel func(d []T, i uint, j uint, n uint, cost *T)) []T {
+
+	return Matrix(n, m, deletion, insertion, func(m uint, n uint) *T {
+		return substCost(n, m)
+	}, kernel)
+
+}
+
 // Matrix is the default Levenshtein algorithm
 func Matrix[T Number](m uint, n uint, deletion func(uint) *T, insertion func(uint) *T,
 	substCost func(uint, uint) *T, kernel func(d []T, i uint, j uint, n uint, cost *T)) []T {
+
+	if kernel == nil {
+		kernel = Kernel[T]
+	}
+	if deletion == nil {
+		deletion = One[T]
+	}
+	if insertion == nil {
+		insertion = One[T]
+	}
 
 	m++
 	n++
