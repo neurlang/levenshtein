@@ -18,41 +18,41 @@ func WalkVals[T Number](mat []T, width uint, to func(prev T, this T, x uint, y u
 		left := x - 1 + width*(y)
 		if diag >= 0 {
 			if mat[diag] < mat[left] && mat[diag] < mat[up] {
-				x--
-				y--
 				if to(mat[here], mat[diag], x, y) {
 					return
 				}
+				x--
+				y--
 				continue
 			}
 		}
 		if left >= 0 && up >= 0 {
 			if mat[up] < mat[left] {
-				y--
 				if to(mat[here], mat[up], x, y) {
 					return
 				}
+				y--
 				continue
 			} else {
-				x--
 				if to(mat[here], mat[left], x, y) {
 					return
 				}
+				x--
 				continue
 			}
 		}
 		if left >= 0 {
-			x--
 			if to(mat[here], mat[left], x, y) {
 				return
 			}
+			x--
 			continue
 		}
 		if up >= 0 {
-			y--
 			if to(mat[here], mat[up], x, y) {
 				return
 			}
+			y--
 			continue
 		}
 	}
