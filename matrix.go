@@ -66,11 +66,11 @@ func OneString[T Number](a, b string) func(uint, uint) *T {
 }
 
 // Kernel is the default Levenshtein algorithm kernel
-func Kernel[T Number](d []T, i uint, j uint, n uint, cost *T) {
-	var del = d[n*(i-1)+(j)] + d[n]
-	var ins = d[n*(i)+(j-1)] + d[1]
+func Kernel[T Number](d []T, i uint, j uint, n uint, cost *T, delCost *T, insCost *T) {
+	var del = d[n*(i-1)+j] + *delCost
+	var ins = d[n*i+(j-1)] + *insCost
 	var sub = d[n*(i-1)+(j-1)] + *cost
-	var cell = &d[n*(i)+(j)]
+	var cell = &d[n*i+j]
 
 	if del < ins {
 		if del < sub {
@@ -89,9 +89,9 @@ func Kernel[T Number](d []T, i uint, j uint, n uint, cost *T) {
 
 // MatrixT is the transposed Levenshtein algorithm
 func MatrixT[T Number](m uint, n uint, deletion func(uint) *T, insertion func(uint) *T,
-	substCost func(uint, uint) *T, kernel func(d []T, i uint, j uint, n uint, cost *T)) []T {
+	substCost func(uint, uint) *T, kernel func(d []T, i uint, j uint, n uint, cost *T, delCost *T, insCost *T)) []T {
 
-	return Matrix(n, m, deletion, insertion, func(m uint, n uint) *T {
+	return Matrix(n, m, insertion, deletion, func(m uint, n uint) *T {
 		return substCost(n, m)
 	}, kernel)
 
@@ -99,7 +99,7 @@ func MatrixT[T Number](m uint, n uint, deletion func(uint) *T, insertion func(ui
 
 // Matrix is the default Levenshtein algorithm
 func Matrix[T Number](m uint, n uint, deletion func(uint) *T, insertion func(uint) *T,
-	substCost func(uint, uint) *T, kernel func(d []T, i uint, j uint, n uint, cost *T)) []T {
+	substCost func(uint, uint) *T, kernel func(d []T, i uint, j uint, n uint, cost *T, delCost *T, insCost *T)) []T {
 
 	if kernel == nil {
 		kernel = Kernel[T]
@@ -116,7 +116,7 @@ func Matrix[T Number](m uint, n uint, deletion func(uint) *T, insertion func(uin
 
 	var d = make([]T, m*n)
 
-	var none = d[0]
+	var none T
 
 	for i := uint(1); i < m; i++ {
 		var dele *T
@@ -124,9 +124,9 @@ func Matrix[T Number](m uint, n uint, deletion func(uint) *T, insertion func(uin
 			dele = deletion(i - 1)
 		}
 		if dele == nil {
-			d[n*(i)+0] = d[n*(i-1)+0] + none
+			d[n*i+0] = d[n*(i-1)+0] + none
 		} else {
-			d[n*(i)+0] = d[n*(i-1)+0] + *dele
+			d[n*i+0] = d[n*(i-1)+0] + *dele
 		}
 	}
 
@@ -136,23 +136,34 @@ func Matrix[T Number](m uint, n uint, deletion func(uint) *T, insertion func(uin
 			inse = insertion(j - 1)
 		}
 		if inse == nil {
-			d[n*(0)+j] = d[n*(0)+j-1] + none
+			d[n*0+j] = d[n*0+j-1] + none
 		} else {
-			d[n*(0)+j] = d[n*(0)+j-1] + *inse
+			d[n*0+j] = d[n*0+j-1] + *inse
 		}
 	}
 
 	for j := uint(1); j < n; j++ {
 		for i := uint(1); i < m; i++ {
-			var cost *T
+			var cost, delCost, insCost *T
 			if substCost != nil {
 				cost = substCost(i-1, j-1)
 			}
-			if cost == nil {
-				kernel(d, i, j, n, &none)
-			} else {
-				kernel(d, i, j, n, cost)
+			if deletion != nil {
+				delCost = deletion(i - 1)
 			}
+			if insertion != nil {
+				insCost = insertion(j - 1)
+			}
+			if cost == nil {
+				cost = &none
+			}
+			if delCost == nil {
+				delCost = &none
+			}
+			if insCost == nil {
+				insCost = &none
+			}
+			kernel(d, i, j, n, cost, delCost, insCost)
 		}
 	}
 
@@ -161,7 +172,7 @@ func Matrix[T Number](m uint, n uint, deletion func(uint) *T, insertion func(uin
 
 // MatrixTSlices is the transposed Levenshtein algorithm for edit distance between slices
 func MatrixTSlices[T Number, S comparable](ms, ns []S, deletion func(uint) *T, insertion func(uint) *T,
-	substCost func(*S, *S) *T, kernel func(d []T, i uint, j uint, n uint, cost *T)) []T {
+	substCost func(*S, *S) *T, kernel func(d []T, i uint, j uint, n uint, cost *T, delCost *T, insCost *T)) []T {
 
 	if substCost == nil {
 		substCost = OneElements[S, T]
