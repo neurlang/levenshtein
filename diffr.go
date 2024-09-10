@@ -2,6 +2,10 @@ package levenshtein
 
 // DiffR does diff based on edit distance matrix in reverse, detecting skips, inserts, deletes, replacements and their positions.
 // Use false to stop the iteration.
+// is_skip: True if the current characters from both sequences match.
+// is_insert: True if a character from the second sequence is inserted.
+// is_delete: True if a character from the first sequence is deleted.
+// is_replace: True if a character from the first sequence is replaced with a character from the second sequence.
 func DiffR[T Number](mat []T, width uint, differ func(is_skip, is_insert, is_delete, is_replace bool, x, y uint) bool) {
 	height := uint(len(mat)) / width
 	var oldx, oldy = width - 1, height

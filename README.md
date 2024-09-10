@@ -1,10 +1,25 @@
 # levenshtein and go slice diff algorithm
-Levenshtein implements the Levenshtein (edit distance) algorithm for golang (with generics) (go>=1.18)
+Levenshtein implements the Levenshtein (slice diff and edit distance) algorithm for golang (with generics) (go>=1.18)
 ```
 import "github.com/neurlang/levenshtein"
 ```
 
-## Do diff between two slices (difference between two strings in golang using generics)
+## Overview
+
+This package implements the Levenshtein (edit distance) algorithm using Go generics (requires Go >= 1.18).
+The Levenshtein distance measures the minimum number of single-character edits (insertions, deletions, or
+substitutions) required to change one word or sequence into another. This implementation extends the
+algorithm to support slices and provides various utility functions to perform diffs, edit distance
+calculations, and more.
+
+## What is edit distance?
+
+The Levenshtein distance is a measure of how dissimilar two sequences (such as strings or arrays) are by
+counting the minimum number of edits needed to transform one sequence into the other. Edits can be insertions,
+deletions, or substitutions. Skips occur when two characters do not have to be edited in order to transform
+one sequence into the other (typically the same character in both sequences).
+
+## Do diff between two slices (difference between two strings/slices in golang using generics)
 
 Example:
 ```
@@ -28,6 +43,11 @@ Skip at [ 13 ][ 10 ]
 Edit at [ 13 ][ 9 ] 	deleted: {1: '.'} in: {1: 'demonstration.'}: at {2: 'n'} of: {2: 'Demolition'}
 
 ```
+
+In the following example, we use rune slices instead of raw strings to handle Unicode characters properly. This
+is because Go's strings are byte-based, and using rune slices ensures that Unicode characters might be
+interpreted as single elements.
+
 Code:
 ```
 func main() {
