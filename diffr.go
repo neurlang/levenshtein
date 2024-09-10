@@ -38,12 +38,12 @@ func DiffR[T Number](mat []T, width uint, differ func(is_skip, is_insert, is_del
 			is_replace = oldy == oldx
 
 		case [2]bool{true, false}:
-			is_insert = oldx > x
-			is_replace = oldx < x
+			is_insert = oldx < x
+			is_replace = oldx > x
 
 		case [2]bool{false, true}:
-			is_delete = oldy > y
-			is_replace = oldy < y
+			is_delete = oldy < y
+			is_replace = oldy > y
 		}
 		oldx = x
 		oldy = y
