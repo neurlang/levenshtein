@@ -59,13 +59,8 @@ func main() {
 	w1r := []rune(word1)
 	w2r := []rune(word2)
 
-	// Create the Levenshtein edit distance matrix
-	mat := levenshtein.Matrix[float32](
-		uint(len(w1r)),
-		uint(len(w2r)),
-		nil, nil,
-		levenshtein.OneSliceR[rune, float32](w1r, w2r),
-		nil)
+	// Create the Levenshtein reverse edit distance matrix
+	mat := levenshtein.MatrixSlicesR[float32, rune](w1r, w2r, nil, nil, nil, nil)
 
 	var distance = *levenshtein.Distance(mat)
 
@@ -74,7 +69,7 @@ func main() {
 
 	println("\nLevenshtein diff making {1: '"+ word1+ "'} into {2: '"+ word2+ "'} (diff between two slices):\n")
 
-	// Finally do the diff of the two words
+	// Finally do the diff of the two words (reverse of the reverse matrix to use normal order)
 	levenshtein.DiffR(mat, uint(len(w2r)+1), func(is_skip, is_insert, is_delete, is_replace bool, x, y uint) bool {
 
 		if is_skip {
