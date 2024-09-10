@@ -27,14 +27,14 @@ func DiffR[T Number](mat []T, width uint, differ func(is_skip, is_insert, is_del
 		}
 
 		var is_insert, is_delete, is_replace bool
-		switch [2]int{int(oldx) - int(x), int(oldy) - int(y)} {
+		switch [2]bool{int(oldx) - int(x) != 0, int(oldy) - int(y) != 0} {
 		default:
 			is_replace = true
 
-		case [2]int{1, 0}, [2]int{-1, 0}:
+		case [2]bool{true, false}:
 			is_insert = true
 
-		case [2]int{0, 1}, [2]int{0, -1}:
+		case [2]bool{false, true}:
 			is_delete = true
 
 		}
