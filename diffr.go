@@ -8,7 +8,7 @@ package levenshtein
 // is_replace: True if a character from the first sequence is replaced with a character from the second sequence.
 func DiffR[T Number](mat []T, width uint, differ func(is_skip, is_insert, is_delete, is_replace bool, x, y uint) bool) {
 	height := uint(len(mat)) / width
-	var oldx, oldy = width - 1, height
+	var oldx, oldy = width - 1, height - 1
 	var distance = mat[len(mat)-1]
 	WalkValsR(mat, width, func(prev, this T, x, y uint) bool {
 		// Print matrix values
