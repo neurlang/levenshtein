@@ -12,8 +12,8 @@ func DiffR[T Number](mat []T, width uint, differ func(is_skip, is_insert, is_del
 	var distance = mat[len(mat)-1]
 	WalkValsR(mat, width, func(prev, this T, x, y uint) bool {
 		// Print matrix values
-		if x == 0 || y == 0 {
-			// break iteration when at the beginning of some word
+		if x == 0 && y == 0 {
+			// break iteration when at the beginning of both words
 			return true
 		}
 

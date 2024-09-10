@@ -58,6 +58,30 @@ func WalkVals[T Number](mat []T, width uint, to func(prev T, this T, x uint, y u
 			continue
 		}
 	}
+	for x > 0 && y == 0 {
+		here := x + width*y
+		left := x - 1 + width*(y)
+		if left >= 0 {
+			if to(mat[here], mat[left], x, y) {
+				return
+			}
+			x--
+			continue
+		}
+		break
+	}
+	for x == 0 && y > 0 {
+		here := x + width*y
+		up := x + width*(y-1)
+		if up >= 0 {
+			if to(mat[here], mat[up], x, y) {
+				return
+			}
+			y--
+			continue
+		}
+		break
+	}
 }
 
 // WalkVals iterates the edit distance matrix in reverse. Use false to stop the iteration.
