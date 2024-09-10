@@ -8,7 +8,8 @@ func Walk[T Number](mat []T, width uint, to func(uint, uint)) {
 	})
 }
 
-// WalkVals iterates the edit distance matrix. Use true to stop the iteration. X or Y may be zero even if one dimension was empty.
+// WalkVals iterates the edit distance matrix. Use true to stop the iteration.
+// If one dimension was empty, the matrix is not walked.
 func WalkVals[T Number](mat []T, width uint, to func(prev T, this T, x uint, y uint) bool) {
 	pos := uint(len(mat) - 1)
 	x := (pos % width)
@@ -57,30 +58,6 @@ func WalkVals[T Number](mat []T, width uint, to func(prev T, this T, x uint, y u
 			y--
 			continue
 		}
-	}
-	for x > 0 && y == 0 {
-		here := x + width*y
-		left := x - 1 + width*(y)
-		if left >= 0 {
-			if to(mat[here], mat[left], x, y) {
-				return
-			}
-			x--
-			continue
-		}
-		break
-	}
-	for x == 0 && y > 0 {
-		here := x + width*y
-		up := x + width*(y-1)
-		if up >= 0 {
-			if to(mat[here], mat[up], x, y) {
-				return
-			}
-			y--
-			continue
-		}
-		break
 	}
 }
 
