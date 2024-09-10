@@ -1,60 +1,34 @@
-# levenshtein
+# levenshtein and go slice diff algorithm
 Levenshtein implements the Levenshtein (edit distance) algorithm for golang (with generics) (go>=1.18)
 ```
 import "github.com/neurlang/levenshtein"
 ```
 
-## Calculate the edit distance between unicode strings
-
-```
-func main1() {
-
-	const word1 = "☺"
-	const word2 = "Ö"
-
-	var mat = levenshtein.Matrix[float32](uint(len([]rune(word1))), uint(len([]rune(word2))),
-		nil, nil,
-		levenshtein.OneSlice[rune, float32]([]rune(word1), []rune(word2)), nil)
-
-	fmt.Println("Edit distance is:", *levenshtein.Distance(mat))
-
-}
-```
-
-## Calculate the edit distance between raw strings
-
-```
-func main2() {
-
-	const word1 = "☺"
-	const word2 = "Ö"
-
-	var mat = levenshtein.Matrix[float32](uint(len((word1))), uint(len((word2))),
-		nil, nil,
-		levenshtein.OneString[float32]((word1), (word2)), nil)
-
-	fmt.Println("Edit distance is:", *levenshtein.Distance(mat))
-
-}
-```
-
-## Calculate the transposed edit distance between string slices
-
-
-```
-func main3() {
-	var array1 = []string{"0", "1", "2"}
-	var array2 = []string{"0", "2"}
-
-	var matt = levenshtein.MatrixTSlices[float32, string](array1, array2,
-		nil, nil, nil, nil)
-
-	fmt.Println("Transposed Edit distance is:", *levenshtein.Distance(matt))
-}
-```
-
 ## Do diff between two slices (difference between two strings in golang using generics)
 
+Example:
+```
+Levenshtein edit distance between {1: 'demonstration.'} and {2: 'Demolition'} is:  7 edits
+
+Levenshtein diff making {1: 'demonstration.'} into {2: 'Demolition'} (diff between two slices):
+
+Edit at [ 0 ][ 0 ] 	swapped: {1: 'd'} in: {1: 'demonstration.'}: by {2: 'D'} of: {2: 'Demolition'}
+Skip at [ 2 ][ 2 ] 
+Skip at [ 3 ][ 3 ] 
+Skip at [ 4 ][ 4 ] 
+Edit at [ 4 ][ 3 ] 	deleted: {1: 'n'} in: {1: 'demonstration.'}: at {2: 'o'} of: {2: 'Demolition'}
+Edit at [ 5 ][ 3 ] 	deleted: {1: 's'} in: {1: 'demonstration.'}: at {2: 'o'} of: {2: 'Demolition'}
+Edit at [ 6 ][ 3 ] 	deleted: {1: 't'} in: {1: 'demonstration.'}: at {2: 'o'} of: {2: 'Demolition'}
+Edit at [ 7 ][ 4 ] 	swapped: {1: 'r'} in: {1: 'demonstration.'}: by {2: 'l'} of: {2: 'Demolition'}
+Edit at [ 8 ][ 5 ] 	swapped: {1: 'a'} in: {1: 'demonstration.'}: by {2: 'i'} of: {2: 'Demolition'}
+Skip at [ 10 ][ 7 ] 
+Skip at [ 11 ][ 8 ] 
+Skip at [ 12 ][ 9 ] 
+Skip at [ 13 ][ 10 ] 
+Edit at [ 13 ][ 9 ] 	deleted: {1: '.'} in: {1: 'demonstration.'}: at {2: 'n'} of: {2: 'Demolition'}
+
+```
+Code:
 ```
 func main() {
 	// Define two words with some overlapping characters
@@ -116,6 +90,55 @@ func main() {
 		return true
 	})
 
+}
+```
+
+## Calculate the edit distance between unicode strings
+
+```
+func main1() {
+
+	const word1 = "☺"
+	const word2 = "Ö"
+
+	var mat = levenshtein.Matrix[float32](uint(len([]rune(word1))), uint(len([]rune(word2))),
+		nil, nil,
+		levenshtein.OneSlice[rune, float32]([]rune(word1), []rune(word2)), nil)
+
+	fmt.Println("Edit distance is:", *levenshtein.Distance(mat))
+
+}
+```
+
+## Calculate the edit distance between raw strings
+
+```
+func main2() {
+
+	const word1 = "☺"
+	const word2 = "Ö"
+
+	var mat = levenshtein.Matrix[float32](uint(len((word1))), uint(len((word2))),
+		nil, nil,
+		levenshtein.OneString[float32]((word1), (word2)), nil)
+
+	fmt.Println("Edit distance is:", *levenshtein.Distance(mat))
+
+}
+```
+
+## Calculate the transposed edit distance between string slices
+
+
+```
+func main3() {
+	var array1 = []string{"0", "1", "2"}
+	var array2 = []string{"0", "2"}
+
+	var matt = levenshtein.MatrixTSlices[float32, string](array1, array2,
+		nil, nil, nil, nil)
+
+	fmt.Println("Transposed Edit distance is:", *levenshtein.Distance(matt))
 }
 ```
 
