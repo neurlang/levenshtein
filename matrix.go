@@ -37,6 +37,16 @@ func OneSlice[C comparable, T Number](a, b []C) func(uint, uint) *T {
 	}
 }
 
+// OneSliceR instantiates the default substitution cost callback which calculates
+// the substitution cost between two comparable slices in reverse orders.
+// The substitution cost is none if the slice elements are the same, and One if
+// the slice elements are not equal.
+func OneSliceR[T comparable, N Number](a, b []T) func(uint, uint) *N {
+	return func(ai uint, bi uint) *N {
+		return OneSlice[T, N](a, b)(uint(len(a))-ai-1, uint(len(b))-bi-1)
+	}
+}
+
 // OneElements is the default substitution cost callback which calculates
 // the substitution cost between two comparable elements.
 // The substitution cost is none if the slice elements are the same, and One if
