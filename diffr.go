@@ -116,7 +116,7 @@ func levenpath[T Number](matrix []T, width uint) []pathStep {
 	return levenpath
 }
 
-// Diff does diff based on edit distance matrix in reverse, detecting skips, inserts, deletes, replacements and their positions.
+// Diff does diff based on edit distance matrix, detecting skips, inserts, deletes, replacements and their positions.
 // Use false to stop the iteration.
 // is_skip: True if the current characters from both sequences match.
 // is_insert: True if a character from the second sequence is inserted.

@@ -1,6 +1,6 @@
 package levenshtein
 
-// Walk is the older method to iterate the edit distance matrix. It doesn't have any way to stop the iteration.
+// Walk is the older method to iterate the edit distance matrix. It doesn't have any way to stop the iteration. Using this for diff is broken, use Diff instead.
 func Walk[T Number](mat []T, width uint, to func(uint, uint)) {
 	WalkVals(mat, width, func(prev T, this T, x uint, y uint) bool {
 		to(x, y)
@@ -8,7 +8,7 @@ func Walk[T Number](mat []T, width uint, to func(uint, uint)) {
 	})
 }
 
-// WalkVals iterates the edit distance matrix. Use true to stop the iteration.
+// WalkVals iterates the edit distance matrix. Use true to stop the iteration. Using this for diff is broken, use Diff instead.
 func WalkVals[T Number](mat []T, width uint, to func(prev T, this T, x uint, y uint) bool) {
 	pos := uint(len(mat) - 1)
 	x := (pos % width)
@@ -87,7 +87,7 @@ func WalkVals[T Number](mat []T, width uint, to func(prev T, this T, x uint, y u
 	}
 }
 
-// WalkVals iterates the edit distance matrix in reverse. Use false to stop the iteration.
+// WalkVals iterates the edit distance matrix in reverse. Use false to stop the iteration. Using this for diff is broken, use Diff instead.
 func WalkValsR[T Number](mat []T, width uint, cb func(prev, this T, x, y uint) bool) {
 	height := uint(len(mat)) / width
 	WalkVals(mat, width, func(prev, this T, x, y uint) bool {
