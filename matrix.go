@@ -37,16 +37,6 @@ func OneSlice[C comparable, T Number](a, b []C) func(uint, uint) *T {
 	}
 }
 
-// OneSliceR instantiates the default substitution cost callback which calculates
-// the substitution cost between two comparable slices in reverse orders.
-// The substitution cost is none if the slice elements are the same, and One if
-// the slice elements are not equal.
-func OneSliceR[T comparable, N Number](a, b []T) func(uint, uint) *N {
-	return func(ai uint, bi uint) *N {
-		return OneSlice[T, N](a, b)(uint(len(a))-ai-1, uint(len(b))-bi-1)
-	}
-}
-
 // OneElements is the default substitution cost callback which calculates
 // the substitution cost between two comparable elements.
 // The substitution cost is none if the slice elements are the same, and One if
@@ -77,11 +67,16 @@ func OneString[T Number](a, b string) func(uint, uint) *T {
 
 // Kernel is the default Levenshtein algorithm kernel
 func Kernel[T Number](d []T, i uint, j uint, n uint, cost *T, delCost *T, insCost *T) {
+
+	// Calculate deletion, insertion, and substitution costs
 	var del = d[n*(i-1)+j] + *delCost
 	var ins = d[n*i+(j-1)] + *insCost
 	var sub = d[n*(i-1)+(j-1)] + *cost
+
+	// Pointers to current cell and backtracking info
 	var cell = &d[n*i+j]
 
+	// Update cost in the current cell
 	if del < ins {
 		if del < sub {
 			*cell = del
@@ -181,7 +176,6 @@ func Matrix[T Number](m uint, n uint, deletion func(uint) *T, insertion func(uin
 			kernel(d, i, j, n, cost, delCost, insCost)
 		}
 	}
-
 	return d
 }
 
@@ -199,25 +193,16 @@ func MatrixTSlices[T Number, S comparable](ms, ns []S, deletion func(uint) *T, i
 	}, kernel)
 }
 
-// MatrixSlicesR is the Levenshtein algorithm for reverse edit distance between slices. Use this instead of Matrix,
+// MatrixSlices is the transposed Levenshtein algorithm for edit distance between slices. Use this instead of Matrix,
 // if your inputs are slices anyway. First two parameters are comparable slices, the other parameters can be nil or customized.
-func MatrixSlicesR[T Number, S comparable](ms, ns []S, deletion func(uint) *T, insertion func(uint) *T,
+func MatrixSlices[T Number, S comparable](ms, ns []S, deletion func(uint) *T, insertion func(uint) *T,
 	substCost func(*S, *S) *T, kernel func(d []T, i uint, j uint, n uint, cost *T, delCost *T, insCost *T)) []T {
 
 	if substCost == nil {
 		substCost = OneElements[S, T]
 	}
-	if deletion == nil {
-		deletion = One[T]
-	}
-	if insertion == nil {
-		insertion = One[T]
-	}
-	return Matrix(uint(len(ms)), uint(len(ns)), func(x uint) *T {
-		return deletion(uint(len(ms)) - x - 1)
-	}, func(x uint) *T {
-		return insertion(uint(len(ns)) - x - 1)
-	}, func(m uint, n uint) *T {
-		return substCost(&ms[uint(len(ms))-m-1], &ns[uint(len(ns))-n-1])
+
+	return Matrix(uint(len(ms)), uint(len(ns)), deletion, insertion, func(m uint, n uint) *T {
+		return substCost(&ms[m], &ns[n])
 	}, kernel)
 }

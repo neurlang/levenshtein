@@ -9,7 +9,6 @@ func Walk[T Number](mat []T, width uint, to func(uint, uint)) {
 }
 
 // WalkVals iterates the edit distance matrix. Use true to stop the iteration.
-// If one dimension was empty, the matrix is not walked.
 func WalkVals[T Number](mat []T, width uint, to func(prev T, this T, x uint, y uint) bool) {
 	pos := uint(len(mat) - 1)
 	x := (pos % width)
@@ -20,6 +19,32 @@ func WalkVals[T Number](mat []T, width uint, to func(prev T, this T, x uint, y u
 		up := x + width*(y-1)
 		left := x - 1 + width*(y)
 		if diag >= 0 {
+
+			if mat[left] == mat[up] && mat[diag] == mat[left] {
+				if x == y {
+					if to(mat[here], mat[diag], x, y) {
+						return
+					}
+					x--
+					y--
+					continue
+				}
+				if x > y {
+					if to(mat[here], mat[left], x, y) {
+						return
+					}
+					x--
+					continue
+				}
+				if x < y {
+					if to(mat[here], mat[up], x, y) {
+						return
+					}
+					y--
+					continue
+				}
+			}
+
 			if mat[diag] < mat[left] && mat[diag] < mat[up] {
 				if to(mat[here], mat[diag], x, y) {
 					return
@@ -28,21 +53,22 @@ func WalkVals[T Number](mat []T, width uint, to func(prev T, this T, x uint, y u
 				y--
 				continue
 			}
-		}
-		if left >= 0 && up >= 0 {
+
 			if mat[up] < mat[left] {
 				if to(mat[here], mat[up], x, y) {
 					return
 				}
 				y--
 				continue
-			} else {
+			}
+			if mat[up] > mat[left] {
 				if to(mat[here], mat[left], x, y) {
 					return
 				}
 				x--
 				continue
 			}
+
 		}
 		if left >= 0 {
 			if to(mat[here], mat[left], x, y) {
@@ -62,15 +88,8 @@ func WalkVals[T Number](mat []T, width uint, to func(prev T, this T, x uint, y u
 }
 
 // WalkVals iterates the edit distance matrix in reverse. Use false to stop the iteration.
-// If any dimension is emtpy, the matrix is not walked.
 func WalkValsR[T Number](mat []T, width uint, cb func(prev, this T, x, y uint) bool) {
-	if width <= 1 {
-		return
-	}
 	height := uint(len(mat)) / width
-	if height <= 1 {
-		return
-	}
 	WalkVals(mat, width, func(prev, this T, x, y uint) bool {
 		x = width - x
 		y = height - y
