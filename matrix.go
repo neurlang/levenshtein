@@ -2,6 +2,7 @@
 package levenshtein
 
 // Number is the magnitude of the Levenshtein distance constraint
+// (the type such as integer which can be used to express the difference between characters or the two compared slices elements)
 type Number interface {
 	int8 | uint8 | int16 | uint16 | int32 | uint32 | int64 | uint64 | int | uint | float32 | float64
 }
@@ -14,7 +15,8 @@ func One[T Number](uint) *T {
 }
 
 // Distance returns the edit distance from the edit matrix (the last element),
-// or nil if the matrix is of size 0
+// or nil if the matrix is of size 0. Used to figure out the Edit distance
+// (how many minimum edits needed) from the matrix solved by Matrix.
 func Distance[T any](d []T) *T {
 	if len(d) == 0 {
 		return nil
@@ -26,6 +28,7 @@ func Distance[T any](d []T) *T {
 // the substitution cost between two comparable slices.
 // The substitution cost is none if the slice elements are the same, and One if
 // the slice elements are not equal.
+// You can implement something like this to customize the substitution cost used by the slices algorithm.
 func OneSlice[C comparable, T Number](a, b []C) func(uint, uint) *T {
 	return func(x, y uint) *T {
 		if a[x] == b[y] {
@@ -41,6 +44,7 @@ func OneSlice[C comparable, T Number](a, b []C) func(uint, uint) *T {
 // the substitution cost between two comparable elements.
 // The substitution cost is none if the slice elements are the same, and One if
 // the slice elements are not equal.
+// You can implement something like this to customize the substitution cost used by the elements of slices algorithm.
 func OneElements[C comparable, T Number](a *C, b *C) *T {
 	if *a == *b {
 		return (*T)(nil)
@@ -54,6 +58,7 @@ func OneElements[C comparable, T Number](a *C, b *C) *T {
 // the substitution cost between two strings.
 // The substitution cost is none if the string bytes are the same, and One if
 // the string bytes are not equal.
+// You can implement something like this to customize the substitution cost used by the strings algorithm.
 func OneString[T Number](a, b string) func(uint, uint) *T {
 	return func(x, y uint) *T {
 		if a[x] == b[y] {
@@ -65,7 +70,7 @@ func OneString[T Number](a, b string) func(uint, uint) *T {
 	}
 }
 
-// Kernel is the default Levenshtein algorithm kernel
+// Kernel is the default Levenshtein algorithm kernel. You can customize the kernel to modify any costs or the algorithm calculation itself.
 func Kernel[T Number](d []T, i uint, j uint, n uint, cost *T, delCost *T, insCost *T) {
 
 	// Calculate deletion, insertion, and substitution costs
