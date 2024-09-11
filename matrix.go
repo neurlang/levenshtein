@@ -193,7 +193,7 @@ func MatrixTSlices[T Number, S comparable](ms, ns []S, deletion func(uint) *T, i
 	}, kernel)
 }
 
-// MatrixSlices is the transposed Levenshtein algorithm for edit distance between slices. Use this instead of Matrix,
+// MatrixSlices is the Levenshtein algorithm for edit distance between slices. Use this instead of Matrix,
 // if your inputs are slices anyway. First two parameters are comparable slices, the other parameters can be nil or customized.
 func MatrixSlices[T Number, S comparable](ms, ns []S, deletion func(uint) *T, insertion func(uint) *T,
 	substCost func(*S, *S) *T, kernel func(d []T, i uint, j uint, n uint, cost *T, delCost *T, insCost *T)) []T {
