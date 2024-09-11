@@ -1,4 +1,4 @@
-// Levenshtein implements the Levenshtein (edit distance) algorithm for golang
+// Levenshtein implements the Levenshtein (edit distance and slice diff) algorithm for golang
 package levenshtein
 
 // Number is the magnitude of the Levenshtein distance constraint
