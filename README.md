@@ -60,7 +60,7 @@ func main() {
 	w2r := []rune(word2)
 
 	// Create the Levenshtein reverse edit distance matrix
-	mat := levenshtein.MatrixSlicesR[float32, rune](w1r, w2r, nil, nil, nil, nil)
+	mat := levenshtein.MatrixSlices[float32, rune](w1r, w2r, nil, nil, nil, nil)
 
 	var distance = *levenshtein.Distance(mat)
 
@@ -70,7 +70,7 @@ func main() {
 	println("\nLevenshtein diff making {1: '"+ word1+ "'} into {2: '"+ word2+ "'} (diff between two slices):\n")
 
 	// Finally do the diff of the two words (reverse of the reverse matrix to use normal order)
-	levenshtein.DiffR(mat, uint(len(w2r)+1), func(is_skip, is_insert, is_delete, is_replace bool, x, y uint) bool {
+	levenshtein.Diff(mat, uint(len(w2r)+1), func(is_skip, is_insert, is_delete, is_replace bool, x, y uint) bool {
 
 		if is_skip {
 
@@ -94,11 +94,21 @@ func main() {
 			action = "at"
 		}
 
+		var w1letter string
+		if int(x) < len(w1r) {
+			w1letter = string(w1r[x])
+		}
+		var w2letter string
+		if int(y) < len(w2r) {
+			w2letter = string(w2r[y])
+		}
+
+
 		// Printing the position, words, and corresponding characters
 		println("Edit at [", x, "][", y, "] \t" +
-			operation+": {1: '"+ string(w1r[x])+ "'} in:",
+			operation+": {1: '"+ w1letter + "'} in:",
 				"{1: '"+ word1+ "'}"+":",
-			action+" {2: '"+ string(w2r[y])+ "'} of:",
+			action+" {2: '"+ w2letter + "'} of:",
 				"{2: '"+ word2+ "'}")
 
 		// Continue walking through the matrix
