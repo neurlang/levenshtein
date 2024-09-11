@@ -27,20 +27,21 @@ Levenshtein edit distance between {1: 'demonstration.'} and {2: 'Demolition'} is
 
 Levenshtein diff making {1: 'demonstration.'} into {2: 'Demolition'} (diff between two slices):
 
+Skip at [ 0 ][ 0 ] 
 Edit at [ 0 ][ 0 ] 	swapped: {1: 'd'} in: {1: 'demonstration.'}: by {2: 'D'} of: {2: 'Demolition'}
 Skip at [ 2 ][ 2 ] 
 Skip at [ 3 ][ 3 ] 
 Skip at [ 4 ][ 4 ] 
-Edit at [ 4 ][ 3 ] 	deleted: {1: 'n'} in: {1: 'demonstration.'}: at {2: 'o'} of: {2: 'Demolition'}
-Edit at [ 5 ][ 3 ] 	deleted: {1: 's'} in: {1: 'demonstration.'}: at {2: 'o'} of: {2: 'Demolition'}
-Edit at [ 6 ][ 3 ] 	deleted: {1: 't'} in: {1: 'demonstration.'}: at {2: 'o'} of: {2: 'Demolition'}
-Edit at [ 7 ][ 4 ] 	swapped: {1: 'r'} in: {1: 'demonstration.'}: by {2: 'l'} of: {2: 'Demolition'}
-Edit at [ 8 ][ 5 ] 	swapped: {1: 'a'} in: {1: 'demonstration.'}: by {2: 'i'} of: {2: 'Demolition'}
-Skip at [ 10 ][ 7 ] 
+Edit at [ 4 ][ 4 ] 	swapped: {1: 'n'} in: {1: 'demonstration.'}: by {2: 'l'} of: {2: 'Demolition'}
+Edit at [ 5 ][ 5 ] 	swapped: {1: 's'} in: {1: 'demonstration.'}: by {2: 'i'} of: {2: 'Demolition'}
+Skip at [ 7 ][ 7 ] 
+Edit at [ 7 ][ 7 ] 	deleted: {1: 'r'} in: {1: 'demonstration.'}: at {2: 'i'} of: {2: 'Demolition'}
+Edit at [ 8 ][ 7 ] 	deleted: {1: 'a'} in: {1: 'demonstration.'}: at {2: 'i'} of: {2: 'Demolition'}
+Edit at [ 9 ][ 7 ] 	deleted: {1: 't'} in: {1: 'demonstration.'}: at {2: 'i'} of: {2: 'Demolition'}
 Skip at [ 11 ][ 8 ] 
 Skip at [ 12 ][ 9 ] 
 Skip at [ 13 ][ 10 ] 
-Edit at [ 13 ][ 9 ] 	deleted: {1: '.'} in: {1: 'demonstration.'}: at {2: 'n'} of: {2: 'Demolition'}
+Edit at [ 13 ][ 10 ] 	deleted: {1: '.'} in: {1: 'demonstration.'}: at {2: ''} of: {2: 'Demolition'}
 
 ```
 
