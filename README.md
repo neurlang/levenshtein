@@ -1,171 +1,142 @@
-# levenshtein and go slice diff algorithm
-Levenshtein implements the Levenshtein (slice diff and edit distance) algorithm for golang (with generics) (go>=1.18)
-```
-import "github.com/neurlang/levenshtein"
-```
+# levenshtein
 
-## Overview
+Go implementation of the Levenshtein edit distance / diff algorithm with generics support.
 
-This package implements the Levenshtein (edit distance) algorithm using Go generics (requires Go >= 1.18).
-The Levenshtein distance measures the minimum number of single-character edits (insertions, deletions, or
-substitutions) required to change one word or sequence into another. This implementation extends the
-algorithm to support slices and provides various utility functions to perform diffs, edit distance
-calculations, and more.
-
-## What is edit distance?
-
-The Levenshtein distance is a measure of how dissimilar two sequences (such as strings or arrays) are by
-counting the minimum number of edits needed to transform one sequence into the other. Edits can be insertions,
-deletions, or substitutions. Skips occur when two characters do not have to be edited in order to transform
-one sequence into the other (typically the same character in both sequences).
-
-## Do diff between two slices (difference between two strings/slices in golang using generics)
-
-Example:
-```
-Levenshtein edit distance between {1: 'demonstration.'} and {2: 'Demolition'} is:  7 edits
-
-Levenshtein diff making {1: 'demonstration.'} into {2: 'Demolition'} (diff between two slices):
-
-Skip at [ 0 ][ 0 ] 
-Edit at [ 0 ][ 0 ] 	swapped: {1: 'd'} in: {1: 'demonstration.'}: by {2: 'D'} of: {2: 'Demolition'}
-Skip at [ 2 ][ 2 ] 
-Skip at [ 3 ][ 3 ] 
-Skip at [ 4 ][ 4 ] 
-Edit at [ 4 ][ 4 ] 	swapped: {1: 'n'} in: {1: 'demonstration.'}: by {2: 'l'} of: {2: 'Demolition'}
-Edit at [ 5 ][ 5 ] 	swapped: {1: 's'} in: {1: 'demonstration.'}: by {2: 'i'} of: {2: 'Demolition'}
-Skip at [ 7 ][ 7 ] 
-Edit at [ 7 ][ 7 ] 	deleted: {1: 'r'} in: {1: 'demonstration.'}: at {2: 'i'} of: {2: 'Demolition'}
-Edit at [ 8 ][ 7 ] 	deleted: {1: 'a'} in: {1: 'demonstration.'}: at {2: 'i'} of: {2: 'Demolition'}
-Edit at [ 9 ][ 7 ] 	deleted: {1: 't'} in: {1: 'demonstration.'}: at {2: 'i'} of: {2: 'Demolition'}
-Skip at [ 11 ][ 8 ] 
-Skip at [ 12 ][ 9 ] 
-Skip at [ 13 ][ 10 ] 
-Edit at [ 13 ][ 10 ] 	deleted: {1: '.'} in: {1: 'demonstration.'}: at {2: ''} of: {2: 'Demolition'}
-
+```bash
+go get github.com/neurlang/levenshtein
 ```
 
-In the following example, we use rune slices instead of raw strings to handle Unicode characters properly. This
-is because Go's strings are byte-based, and using rune slices ensures that Unicode characters might be
-interpreted as single elements.
+Requires Go 1.18 (generics) or later.
 
-Code:
-```
+## What is Levenshtein Distance?
+
+The Levenshtein distance measures the minimum number of single-element edits (insertions, deletions, or substitutions) needed to transform one sequence into another. It works with strings, slices, and any comparable types.
+
+## Quick Start
+
+### Calculate Edit Distance
+
+```go
+package main
+
+import (
+    "fmt"
+    "github.com/neurlang/levenshtein"
+)
+
 func main() {
-	// Define two words with some overlapping characters
-	word1 := "demonstration."
-	word2 := "Demolition"
-
-	// Convert words to rune slices (to handle Unicode properly)
-	w1r := []rune(word1)
-	w2r := []rune(word2)
-
-	// Create the Levenshtein edit distance matrix
-	mat := levenshtein.MatrixSlices[float32, rune](w1r, w2r, nil, nil, nil, nil)
-
-	var distance = *levenshtein.Distance(mat)
-
-	// Now, print the Levenshtein edit distance
-	println("\nLevenshtein edit distance between {1: '"+ word1+ "'} and {2: '"+ word2+ "'} is: ", int(distance), "edits")
-
-	println("\nLevenshtein diff making {1: '"+ word1+ "'} into {2: '"+ word2+ "'} (diff between two slices):\n")
-
-	// Finally do the diff of the two words
-	levenshtein.Diff(mat, uint(len(w2r)+1), func(is_skip, is_insert, is_delete, is_replace bool, x, y uint) bool {
-
-		if is_skip {
-
-			println("Skip at [", x, "][", y, "] ")
-
-			return true
-		}
-
-		var operation, action string
-
-		if is_replace {
-			operation = "swapped"
-			action = "by"
-		}
-		if is_insert {
-			operation = "before"
-			action = "put"
-		}
-		if is_delete {
-			operation = "deleted"
-			action = "at"
-		}
-
-		var w1letter string
-		if int(x) < len(w1r) {
-			w1letter = string(w1r[x])
-		}
-		var w2letter string
-		if int(y) < len(w2r) {
-			w2letter = string(w2r[y])
-		}
-
-
-		// Printing the position, words, and corresponding characters
-		println("Edit at [", x, "][", y, "] \t" +
-			operation+": {1: '"+ w1letter + "'} in:",
-				"{1: '"+ word1+ "'}"+":",
-			action+" {2: '"+ w2letter + "'} of:",
-				"{2: '"+ word2+ "'}")
-
-		// Continue walking through the matrix
-		return true
-	})
-
+    word1 := []rune("kitten")
+    word2 := []rune("sitting")
+    
+    mat := levenshtein.MatrixSlices[int](word1, word2, nil, nil, nil, nil)
+    distance := levenshtein.Distance(mat)
+    
+    fmt.Println("Edit distance:", *distance) // Output: 3
 }
 ```
 
-## Calculate the edit distance between unicode strings
+### Diff Two Sequences
 
-```
-func main1() {
-
-	const word1 = "☺"
-	const word2 = "Ö"
-
-	var mat = levenshtein.Matrix[float32](uint(len([]rune(word1))), uint(len([]rune(word2))),
-		nil, nil,
-		levenshtein.OneSlice[rune, float32]([]rune(word1), []rune(word2)), nil)
-
-	fmt.Println("Edit distance is:", *levenshtein.Distance(mat))
-
+```go
+func main() {
+    word1 := []rune("demonstration")
+    word2 := []rune("Demolition")
+    
+    mat := levenshtein.MatrixSlices[int](word1, word2, nil, nil, nil, nil)
+    width := uint(len(word2) + 1)
+    
+    levenshtein.Diff(mat, width, func(is_skip, is_insert, is_delete, is_replace bool, x, y uint) bool {
+        if is_skip {
+            fmt.Printf("Skip: [%d][%d]\n", x, y)
+        } else if is_replace {
+            fmt.Printf("Replace: '%c' -> '%c' at [%d][%d]\n", word1[x], word2[y], x, y)
+        } else if is_insert {
+            fmt.Printf("Insert: '%c' at [%d][%d]\n", word2[y], x, y)
+        } else if is_delete {
+            fmt.Printf("Delete: '%c' at [%d][%d]\n", word1[x], x, y)
+        }
+        return true // continue iteration
+    })
 }
 ```
 
-## Calculate the edit distance between raw strings
+## API
 
+### Core Functions
+
+**`Matrix[T Number](m, n uint, deletion, insertion, substCost, kernel) []T`**  
+Computes the Levenshtein distance matrix for two sequences of length m and n.
+
+**`MatrixSlices[T Number, S comparable](a, b []S, deletion, insertion, substCost, kernel) []T`**  
+Convenience wrapper for slice inputs.
+
+**`MatrixT[T Number](...) []T`** / **`MatrixTSlices[T Number, S comparable](...) []T`**  
+Transposed versions that swap source and target sequences.
+
+**`Distance[T any](matrix []T) *T`**  
+Returns the final edit distance from a computed matrix.
+
+**`Diff[T Number](matrix []T, width uint, callback func(...) bool)`**  
+Iterates through the edit path, calling the callback for each operation (skip, insert, delete, replace).
+
+### Helper Functions
+
+**`OneSlice[C comparable, T Number](a, b []C) func(uint, uint) *T`**  
+Default substitution cost function for slices (returns 1 for different elements, nil for same).
+
+**`OneString[T Number](a, b string) func(uint, uint) *T`**  
+Default substitution cost function for raw strings (byte-level comparison).
+
+**`OneElements[C comparable, T Number](a, b *C) *T`**  
+Default substitution cost for individual elements.
+
+## Examples
+
+### Unicode Strings
+
+```go
+word1 := []rune("☺")
+word2 := []rune("Ö")
+
+mat := levenshtein.MatrixSlices[int](word1, word2, nil, nil, nil, nil)
+fmt.Println("Distance:", *levenshtein.Distance(mat)) // Output: 1
 ```
-func main2() {
 
-	const word1 = "☺"
-	const word2 = "Ö"
+### Raw Byte Strings
 
-	var mat = levenshtein.Matrix[float32](uint(len((word1))), uint(len((word2))),
-		nil, nil,
-		levenshtein.OneString[float32]((word1), (word2)), nil)
+```go
+word1 := "hello"
+word2 := "hallo"
 
-	fmt.Println("Edit distance is:", *levenshtein.Distance(mat))
-
-}
+mat := levenshtein.Matrix[int](
+    uint(len(word1)), uint(len(word2)),
+    nil, nil,
+    levenshtein.OneString[int](word1, word2),
+    nil,
+)
+fmt.Println("Distance:", *levenshtein.Distance(mat)) // Output: 1
 ```
 
-## Calculate the transposed edit distance between string slices
+### Custom Types
 
+```go
+type1 := []string{"apple", "banana", "cherry"}
+type2 := []string{"apple", "cherry"}
 
-```
-func main3() {
-	var array1 = []string{"0", "1", "2"}
-	var array2 = []string{"0", "2"}
-
-	var matt = levenshtein.MatrixTSlices[float32, string](array1, array2,
-		nil, nil, nil, nil)
-
-	fmt.Println("Transposed Edit distance is:", *levenshtein.Distance(matt))
-}
+mat := levenshtein.MatrixSlices[int](type1, type2, nil, nil, nil, nil)
+fmt.Println("Distance:", *levenshtein.Distance(mat)) // Output: 1
 ```
 
+## Customization
 
+All functions accept optional callbacks for:
+- **deletion**: Custom deletion cost per element
+- **insertion**: Custom insertion cost per element  
+- **substCost**: Custom substitution cost between elements
+- **kernel**: Custom algorithm kernel for cost calculation
+
+Pass `nil` to use defaults (cost of 1 for all operations).
+
+## License
+
+See LICENSE file.
